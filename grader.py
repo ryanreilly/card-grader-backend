@@ -263,9 +263,21 @@ def grade_surface(surface_score, surface_thresholds):
     return 1
 
 def grade_card(image_path):
+    # Load the image
     image = cv2.imread(image_path)
     if image is None:
         raise ValueError("Image could not be loaded.")
+
+    # Resize the image to reduce memory usage
+    max_dimension = 1000  # Maximum width or height in pixels
+    height, width = image.shape[:2]
+    if max(width, height) > max_dimension:
+        scale = max_dimension / max(width, height)
+        new_width = int(width * scale)
+        new_height = int(height * scale)
+        image = cv2.resize(image, (new_width, new_height), interpolation=cv2.INTER_AREA)
+
+    # Proceed with the rest of the processing
     corrected_image = correct_orientation(image)
     preprocessed_image = preprocess_image(corrected_image)
     
